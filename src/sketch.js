@@ -1,8 +1,8 @@
 const scale = 1; // scale the video image
 
 // video image dimensions
-const width = 640 * scale;
-const height = 480 * scale;
+const width = 900 * scale;
+const height = 650 * scale;
 
 // setSketch (below) sets this to a p5 instance.
 // In this file, the p5.js API functions are accessible as methods of this
@@ -45,7 +45,13 @@ export function setup() {
 // a video frame.
 export function draw() {}
 
+let counter = 0;
+
 function drawPoses(poses) {
+  counter = counter + 1;
+  // counter += 1
+  console.log('counter is', counter);
+
   // Modify the graphics context to flip all remaining drawing horizontally.
   // This makes the image act like a mirror (reversing left and right); this
   // is easier to work with.
@@ -61,9 +67,9 @@ function drawKeypoints(poses) {
   poses.forEach((pose) =>
     pose.pose.keypoints.forEach((keypoint) => {
       if (keypoint.score > 0.2) {
-        p5.fill(0, 255, 0);
+        p5.fill(250, 150, 80);
         p5.noStroke();
-        p5.ellipse(keypoint.position.x, keypoint.position.y, 20, 10);
+        p5.square(keypoint.position.x, keypoint.position.y, 20);
       }
     })
   );
@@ -75,8 +81,10 @@ function drawSkeleton(poses) {
     pose.skeleton.forEach((skeleton) => {
       // skeleton is an array of two keypoints. Extract the keypoints.
       const [p1, p2] = skeleton;
-      p5.stroke(255, 0, 0);
+      p5.stroke(255, 100, 200);
+      p5.strokeWeight(5,10,15,10);
       p5.line(p1.position.x, p1.position.y, p2.position.x, p2.position.y);
+      
     });
   });
 }
