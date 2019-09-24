@@ -1,4 +1,10 @@
+let square = true;
+let heart = false;
+let star = false;
+
 const scale = 1; // scale the video image
+const starpath = require ("./star2.jpg")
+const heartpath = require ("./heart.jpg")
 
 // video image dimensions
 const width = 900 * scale;
@@ -12,11 +18,35 @@ let p5;
 
 // setup initializes this to a p5.js Video instance.
 let video;
-
+let starimg;
+let heartimg;
+let button; 
+let button2;
+let button3;
+let button4;
 // index.js calls this to set p5 to the current p5 sketch instance, so that
 // setup and draw can access it.
 export function setSketch(sketch) {
   p5 = sketch;
+}
+
+function setSquare() {
+   square = true;
+   star = false;
+}
+
+function setStar() {
+  square = false;
+  star = true;
+}
+
+function setHeart() {
+  square = false;
+  star = false;
+}
+
+function setSave() {
+  p5.save('myCanvas.jpg');
 }
 
 // p5js calls this code once when the page is loaded (and, during
@@ -25,6 +55,16 @@ export function setup() {
   p5.createCanvas(width, height);
   video = p5.select('video') || p5.createCapture(p5.VIDEO);
   video.size(width, height);
+  starimg = p5.loadImage(starpath);
+  heartimg = p5.loadImage(heartpath);
+  button = p5.createButton('star');
+  button.mousePressed(setStar);
+  button2 = p5.createButton('heart');
+  button2.mousePressed(setHeart);
+  button3 = p5.createButton('square');
+  button3.mousePressed(setSquare);
+  button4 = p5.createButton('saveCanvas');
+  button4.mousePressed(setSave);
 
   // Create a new poseNet method with single-pose detection.
   // The second argument is a function that is called when the model is
@@ -45,12 +85,9 @@ export function setup() {
 // a video frame.
 export function draw() {}
 
-let counter = 0;
 
 function drawPoses(poses) {
-  counter = counter + 1;
-  // counter += 1
-  console.log('counter is', counter);
+ 
 
   // Modify the graphics context to flip all remaining drawing horizontally.
   // This makes the image act like a mirror (reversing left and right); this
@@ -69,10 +106,20 @@ function drawKeypoints(poses) {
       if (keypoint.score > 0.2) {
         p5.fill(250, 150, 80);
         p5.noStroke();
-        p5.square(keypoint.position.x, keypoint.position.y, 20);
+        if (square) {
+          p5.square(keypoint.position.x, keypoint.position.y, 20);
+        }else if (star) {
+          p5.image(starimg, keypoint.position.x, keypoint.position.y, 25, 25);
+          }else {
+          p5.image(heartimg, keypoint.position.x, keypoint.position.y, 25, 25);
+          }
+      //   p5.square(keypoint.position.x, keypoint.position.y, 20);
+      //   p5.image(starimg, keypoint.position.x, keypoint.position.y, 25, 25);
+      //   p5.image(heartimg, keypoint.position.x, keypoint.position.y, 25, 25);
       }
     })
   );
+  
 }
 
 // Draw connections between the skeleton joints.
