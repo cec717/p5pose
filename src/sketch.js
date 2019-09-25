@@ -1,10 +1,11 @@
 let square = true;
 let heart = false;
 let star = false;
-
+let teary = false;
 const scale = 1; // scale the video image
-const starpath = require ("./star2.jpg")
-const heartpath = require ("./heart.jpg")
+const starpath = require ("./star.png")
+const heartpath = require ("./heart.png")
+const tearypath = require ("./teary.png")
 
 // video image dimensions
 const width = 900 * scale;
@@ -20,10 +21,14 @@ let p5;
 let video;
 let starimg;
 let heartimg;
+let tearyimg;
 let button; 
 let button2;
 let button3;
 let button4;
+let button5;
+let slider;
+
 // index.js calls this to set p5 to the current p5 sketch instance, so that
 // setup and draw can access it.
 export function setSketch(sketch) {
@@ -33,16 +38,29 @@ export function setSketch(sketch) {
 function setSquare() {
    square = true;
    star = false;
+   heart = false;
+   teary = false;
 }
 
 function setStar() {
   square = false;
   star = true;
+  heart = false;
+  teary = false;
 }
 
 function setHeart() {
   square = false;
   star = false;
+  heart = true;
+  teary = false;
+}
+
+function setTeary() {
+  square = false;
+  star = false;
+  heart = false; 
+  teary = true;
 }
 
 function setSave() {
@@ -57,14 +75,35 @@ export function setup() {
   video.size(width, height);
   starimg = p5.loadImage(starpath);
   heartimg = p5.loadImage(heartpath);
-  button = p5.createButton('star');
+  tearyimg = p5.loadImage(tearypath);
+  button = p5.createButton('STAR');
   button.mousePressed(setStar);
-  button2 = p5.createButton('heart');
+  button.position(950,80);
+  button.size(50,40);
+  button.style('background-color', '#FFFF8A');
+  button2 = p5.createButton('HEART');
   button2.mousePressed(setHeart);
-  button3 = p5.createButton('square');
+  button2.position(950,150);
+  button2.size(55,40);
+  button2.style('background-color', '#FF9F9F');
+  button3 = p5.createButton('SQUARE');
   button3.mousePressed(setSquare);
-  button4 = p5.createButton('saveCanvas');
+  button3.position(950,220);
+  button3.size(60,40);
+  button3.style('background-color', '#FFB88A');
+  button4 = p5.createButton('Take a Picture!');
   button4.mousePressed(setSave);
+  button4.position(950,630);
+  button4.size(65,40);
+  button4.style('background-color', '#C3CDFE');
+  button5 = p5.createButton('TEARY');
+  button5.mousePressed(setTeary);
+  button5.position(950,290);
+  button5.size(50,40);
+  button5.style('background-color', '#91DCFF');
+  slider = p5.createSlider(0,255,100);
+  slider.position(950,360);
+  
 
   // Create a new poseNet method with single-pose detection.
   // The second argument is a function that is called when the model is
@@ -103,16 +142,23 @@ function drawPoses(poses) {
 function drawKeypoints(poses) {
   poses.forEach((pose) =>
     pose.pose.keypoints.forEach((keypoint) => {
-      if (keypoint.score > 0.2) {
+      if (keypoint.score > 0.2){
         p5.fill(250, 150, 80);
         p5.noStroke();
-        if (square) {
+          if (square){
           p5.square(keypoint.position.x, keypoint.position.y, 20);
-        }else if (star) {
+          }
+          else if (star){
           p5.image(starimg, keypoint.position.x, keypoint.position.y, 25, 25);
-          }else {
+          }
+          else if(heart){
           p5.image(heartimg, keypoint.position.x, keypoint.position.y, 25, 25);
           }
+          else{
+          p5.image(tearyimg, keypoint.position.x, keypoint.position.y, 25,25);
+          }
+          
+      
       //   p5.square(keypoint.position.x, keypoint.position.y, 20);
       //   p5.image(starimg, keypoint.position.x, keypoint.position.y, 25, 25);
       //   p5.image(heartimg, keypoint.position.x, keypoint.position.y, 25, 25);
@@ -129,9 +175,16 @@ function drawSkeleton(poses) {
       // skeleton is an array of two keypoints. Extract the keypoints.
       const [p1, p2] = skeleton;
       p5.stroke(255, 100, 200);
-      p5.strokeWeight(5,10,15,10);
+      //p5.strokeWeight(5,10,15,10);
       p5.line(p1.position.x, p1.position.y, p2.position.x, p2.position.y);
-      
+     
+     var val = slider.value()/8;
+    //map value for slider; want to set range for stroke weight thickness
+    //f = map(slider.value, 0, width, 0, 50);
+     p5.strokeWeight(val, 1);
+     
+    
+  
     });
   });
 }
